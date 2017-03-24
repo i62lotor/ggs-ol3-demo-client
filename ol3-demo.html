@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.0.1/css/ol.css" type="text/css">
+    <style>
+      .map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+    <style>
+      p {
+        border-left: 6px solid #A9D0F5;
+        background-color: lightgrey;
+    }
+    </style>
+    <script src="https://openlayers.org/en/v4.0.1/build/ol.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="ggs-api-request.js"></script>
+    <title>GGS-OpenLayers client</title>
+  </head>
+  <body>
+    <h2>GeoWE Geometry Service test demo</h2>
+    <h3><label>GGS Base URL&nbsp;</label>
+    <input id="baseUrlField" type="text" name="baseUrl" value="http://127.0.0.1:8080/ggs/operations/jts/" size="70" required></h3>
+    <div id="map" class="map"></div>
+    <br>
+    <form class="form-inline">
+      <label>Draw one or more geometries. Select type to draw&nbsp;</label>
+      <select id="type">
+        <option value="Point">Point</option>
+        <option value="LineString">LineString</option>
+        <option value="Polygon">Polygon</option>
+        <option value="None">Navigate</option>
+      </select>
+    </form>
+    
+    
+
+    <p id="Single-feature-operation">
+      <label><b>Single feature operation</b></label>
+      <br>
+      <label>1. Select a feature</label>
+      <input id="select" type="button" value="select a feature">
+      <br>
+      <label>2. Select the operation to perform over selected feature</label>
+      <input id="buffer" type="button" value="buffer" onclick="doSingleFeaturePost('buffer')" title="Distance = 10"/>
+      <input id="envelope" type="button" value="envelope" onclick="doSingleFeaturePost('envelope')"/>
+      <input id="centroid" type="button" value="centroid" onclick="doSingleFeaturePost('centroid')"/>
+    </p>
+    
+
+    <p id="Multiple-feature-operation">
+      <label><b>Multiple feature operation</b></label>
+      <br>
+      <label>Select the operation to perform over all features in the layer</label>
+      <input id="union" type="button" value="union" onclick="doUnionPost()"/>
+    </p>
+
+     <script type="text/javascript">
+
+      var source = new ol.source.Vector({wrapX: false});
+
+      var vector = new ol.layer.Vector({
+        source: source
+      });
+
+
+      var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }), vector
+        ],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([-4.90, 37.36]),
+          zoom: 6
+        })
+      });
+
+    //draw control
+    var geometryTypeSelect = document.getElementById('type');
+
+      var draw; // global so we can remove it later
+      function addInteraction() {
+        var value = geometryTypeSelect.value;
+        if (value !== 'None') {
+          draw = new ol.interaction.Draw({
+            source: source,
+            type: /** @type {ol.geom.GeometryType} */ (geometryTypeSelect.value)
+          });
+          map.addInteraction(draw);
+        }
+      }
+
+
+    /**
+     * Handle change event.
+     */
+    geometryTypeSelect.onchange = function() {
+      map.removeInteraction(draw);
+      addInteraction();
+    };
+
+    addInteraction();
+
+    /**
+    *Select interaction
+    */
+    var select = null;  // ref to currently selected interaction
+    var selectedWkt = null;
+    
+    document.getElementById("select").onclick = function () { 
+      // select interaction working on "singleclick"
+      
+      if(select == null){
+      select = new ol.interaction.Select();  
+      }
+      
+      map.removeInteraction(draw);
+      map.addInteraction(select);
+      select.on('select', function(e) {
+        var feature = e.target.getFeatures().item(0)
+        var ol3Geom = feature.getGeometry();
+        var format = new ol.format.WKT();
+        selectedWkt  = format.writeGeometry(ol3Geom);
+        
+        });
+
+    };
+
+    </script>
+  </body>
+</html>
