@@ -24,7 +24,8 @@
     <h3><label>GGS Base URL&nbsp;</label>
     <input id="baseUrlField" type="text" name="baseUrl" value="http://127.0.0.1:8080/ggs/operations/jts/" size="70" required></h3>
     <div id="map" class="map"></div>
-    <br>
+    
+    <input id="clear map" type="button" value="Clear map" onclick="clearMap()" title="Remove all features"/>
     <form class="form-inline">
       <label>Draw one or more geometries. Select type to draw&nbsp;</label>
       <select id="type">
@@ -46,58 +47,86 @@
       <input id="envelope" type="button" value="envelope" onclick="doSingleFeaturePost('envelope')"/>
       <input id="centroid" type="button" value="centroid" onclick="doSingleFeaturePost('centroid')"/>
     </p>
-    
 
     <p id="Multiple-feature-operation">
       <label><b>Multiple feature operation</b></label>
       <br>
       <label>Select the operation to perform over all features in the layer</label>
-      <input id="union" type="button" value="union" onclick="doUnionPost()"/>
-      <input id="combine" type="button" value="combine" onclick="doUnionPost()"/>
+      <input id="union" type="button" value="union" onclick="doMultiFeaturePost('union',source)"/>
+      <input id="combine" type="button" value="combine" onclick="doMultiFeaturePost('union/combined', source)"/>
+      <input id="divide" type="button" value="Divide the previously combined elements" onclick="divideMultiGeom(sourceResult)"/>
     </p>
-
-
+    
     <p>
       <label><b>Layers operation</b></label>
       <br>
       <label>This set of geometric operations use two layer:</label>
-      <label><b>Source layer:</b> a predefined layer loaded form geojson. <b>Overlay layer:</b> Your drawed layer</label>	
+      <label><b>Source layer:</b> a predefined layer loaded from WKT. <b>Overlay layer:</b> Your drawed layer</label>	
 	  <br>
 	  <label>1. Load the source layer:</label>
-	  <input id="load-source-layer" type="button" value="load layer" onclick="doUnionPost()"/>
+	  <input id="load-source-layer" type="button" value="load layer" onclick="addFeaturesToPredefinedLayer()"/>
 	  <br>
 	  <label>2. Draw your overlay layer</label>
 	  <br>
-      <label>3. Select the operation to perform Between source and overlay layer</label>
+      <label>3. Select the operation to perform Between source and overlay layers</label>
       <br>
-      <input id="overlaped-union" type="button" value="union" onclick="doUnionPost()"/>
-      <input id="intersection" type="button" value="intersection" onclick="doUnionPost()"/>
-      <input id="intersection-elements" type="button" value="intersection-elements" onclick="doUnionPost()"/>
-      <input id="intersect" type="button" value="intersect" onclick="doUnionPost()"/>
-      <input id="difference" type="button" value="difference" onclick="doUnionPost()"/>
-      <input id="sym-difference" type="button" value="sym-difference" onclick="doUnionPost()"/>
-      <input id="difference-elements" type="button" value="difference-elements" onclick="doUnionPost()"/>
-      <input id="sym-difference-elements" type="button" value="sym-difference-elements" onclick="doUnionPost()"/>
-      <input id="division" type="button" value="division" onclick="doUnionPost()"/>
-      <input id="line-division" type="button" value="line-division" onclick="doUnionPost()"/>
-      <input id="polygon-division" type="button" value="polygon-division" onclick="doUnionPost()"/>
+      <label>Result: a collection of features:</label>
+      <input id="overlaped-union" type="button" value="union" onclick="doLayersOperationPost('union/overlaped')"/>      
+      <input id="intersect" type="button" value="intersect" onclick="doLayersOperationPost('intersect/elements')"/>
+      <input id="intersection-elements" type="button" value="intersection-elements" onclick="doLayersOperationPost('intersection/elements')"/>      
+      <input id="difference-elements" type="button" value="difference-elements" onclick="doLayersOperationPost('difference/elements')"/>
+      <input id="sym-difference-elements" type="button" value="sym-difference-elements" onclick="doLayersOperationPost('sym-difference/elements')"/>      
+      <br>
+      <label>Result: a unique features:</label>
+      <input id="intersection" type="button" value="intersection" onclick="doLayersOperationPost('intersection')"/>
+      <input id="difference" type="button" value="difference" onclick="doLayersOperationPost('difference')"/>
+      <input id="sym-difference" type="button" value="sym-difference" onclick="doLayersOperationPost('sym-difference')"/>   
+    </p>
+    <p>
+      <label>Division operation:</label>
+      <br>
+      <label>1.Draw a polygon. 2. Draw a line that cross the polygon. 3. <input id="polygon-division" type="button" value="divide polygon" onclick="divide('division/polygon')"/></label>
+      <br>
+      <label>1.Draw a line 2. Draw a line that cross the line. 3. <input id="divide line" type="button" value="line-division" onclick="divide('division/line')"/></label>      
     </p>
 
      <script type="text/javascript">
-
+      //source layer for draw features
       var source = new ol.source.Vector({wrapX: false});
-
       var vector = new ol.layer.Vector({
         source: source
       });
-
+      //Operation Result layer
+      var sourceResult = new ol.source.Vector({wrapX: false});
+      var vectorResult = new ol.layer.Vector({
+        source: sourceResult
+      });
+      //Predefined layer      
+      var predefinedVectorLayer = new ol.layer.Vector({
+        title: 'added Layer',
+        source: new ol.source.Vector({
+           projection : 'EPSG:25830',
+           url: 'layer.geojson',
+           format: new ol.format.GeoJSON()
+          }),
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: [203, 194, 185, 0.2]
+          }),
+          stroke: new ol.style.Stroke({
+            color: [0, 255, 0, 0.8],
+            width: 2,
+            lineCap: 'round'
+          })
+        })
+      });
 
       var map = new ol.Map({
         target: 'map',
         layers: [
           new ol.layer.Tile({
             source: new ol.source.OSM()
-          }), vector
+          }), vector, vectorResult
         ],
         view: new ol.View({
           center: ol.proj.fromLonLat([-4.90, 37.36]),
@@ -108,17 +137,17 @@
     //draw control
     var geometryTypeSelect = document.getElementById('type');
 
-      var draw; // global so we can remove it later
-      function addInteraction() {
-        var value = geometryTypeSelect.value;
-        if (value !== 'None') {
-          draw = new ol.interaction.Draw({
-            source: source,
-            type: /** @type {ol.geom.GeometryType} */ (geometryTypeSelect.value)
-          });
-          map.addInteraction(draw);
-        }
+    var draw; // global so we can remove it later
+    function addInteraction() {
+      var value = geometryTypeSelect.value;
+      if (value !== 'None') {
+        draw = new ol.interaction.Draw({
+          source: source,
+          type: /** @type {ol.geom.GeometryType} */ (geometryTypeSelect.value)
+        });
+        map.addInteraction(draw);
       }
+    }
 
 
     /**
@@ -139,19 +168,15 @@
     
     document.getElementById("select").onclick = function () { 
       // select interaction working on "singleclick"
-      
       if(select == null){
-      select = new ol.interaction.Select();  
+        select = new ol.interaction.Select();  
       }
       
       map.removeInteraction(draw);
       map.addInteraction(select);
       select.on('select', function(e) {
         var feature = e.target.getFeatures().item(0)
-        var ol3Geom = feature.getGeometry();
-        var format = new ol.format.WKT();
-        selectedWkt  = format.writeGeometry(ol3Geom);
-        
+        selectedWkt = getWkt(feature);
         });
 
     };
