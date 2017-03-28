@@ -6,10 +6,12 @@ Una vez desplegado el GGS, basta con abrir en el navegador el fichero ol3-demo.h
 
 ### ¡ATENCIÓN! 
 - No olvides configurar la url correcta donde has desplegado GGS, antes de ejecutar los ejemplos.
-- CORS. GGS por defecto permite peticiones desde todods los orígenes.
+- CORS.  Por defecto GGS permite peticiones desde todods los orígenes.
+- Los resultados de las operaciones se mostrarán en el mapa en color diferente. Si se produce un error mostrará un mensaje de alerta.
+- Son bienvenidas mejoras, sugerencias y reporte de errores.
 
 ## Operaciones sobre un elemento:
-Los resultados de las operaciones se mostrarán en el mapa en color diferente. Si se produce un error mostrará un mensaje de alerta.
+
 ### Buffer
 Calcula el buffer de 10 del elemento seleccionado en el mapa.
 
@@ -21,6 +23,7 @@ Calcula el rectángulo que envuelve (MBR) al elemento seleccionado en el mapa.
 
 
 ## Operaciones sobre varios elementos:
+
 ### Union
 Calcula la unión geométrica de todos los elementos dibujados en el mapa. Si existen superposiciones de elementos se unirán en uno solo.
 
@@ -32,6 +35,7 @@ Divide los elementos que se han combinado en el punto anterior. Por ejemplo: una
 
 
 ## Operaciones entre capas:
+
 Se empleará una capa auxiliar de poligonos.
 
 ### Union
