@@ -169,8 +169,8 @@ function addFeature(json){
      color: 'rgba('+getRandomInt(0,256)+','+getRandomInt(0,256)+','+getRandomInt(0,256)+',0.4)'
    });
    var stroke = new ol.style.Stroke({
-     color: 'rgba('+getRandomInt(0,256)+','+getRandomInt(0,256)+','+getRandomInt(0,256)+',0.6)',
-     width: 2
+     color: 'rgba('+getRandomInt(0,256)+','+getRandomInt(0,256)+','+getRandomInt(0,256)+',0.8)',
+     width: 3
    });
    var styles = [
      new ol.style.Style({
