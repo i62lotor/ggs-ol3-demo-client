@@ -63,13 +63,10 @@ Calcula la diferencia (la parte que no intersecta) de los elementos de la capa a
 Calcula la diferencia simétrica entre los elementos de la capa auxiliar y los elementos dibujados. Devolviendo un solo elemento.
 
 
-## Operacions de división:
+## Operaciones de división:
 
 ### Divide polygon
 Divide un polígono en varios polígonos (indicadas por la línea de división).
 
 ### Divide linestring
 Divide un linestring en varias líneas (indicadas por la línea de división).
-
-
-
