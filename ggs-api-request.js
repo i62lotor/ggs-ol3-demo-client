@@ -17,8 +17,10 @@ function doSingleFeaturePost(operation) {
         data: flatGeometry,
         dataType: "json",
         success: function(json){
-          addFeature(json);
-           
+          addFeature(json);          
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert('An error occurred...'+jqXHR.status+' - '+jqXHR.responseText);
         }
     });
  };
@@ -39,6 +41,9 @@ function doMultiFeaturePost(operation, sourceLayer){
     dataType: "json",
     success: function(json){ 
        addFeature(json);
+    },
+    error: function(jqXHR, status, errorThrown ){
+      alert('An error occurred...'+jqXHR.status+' - '+jqXHR.responseText);
     }
   });
 };
@@ -62,6 +67,9 @@ function divideMultiGeom(sourceLayer){
       for(var feature in json){
           addFeature(json[feature]);
         }  
+    },
+    error: function(jqXHR, status, errorThrown ){
+      alert('An error occurred...'+jqXHR.status+' - '+jqXHR.responseText);
     }
   });
 };
@@ -91,9 +99,10 @@ function doLayersOperationPost(operation){
         for(var feature in json){
           addFeature(json[feature]);
         }  
-      }
-    
-      
+      }      
+    },
+    error: function(jqXHR, status, errorThrown ){
+      alert('An error occurred...'+jqXHR.status+' - '+jqXHR.responseText);
     }
   });
 };
@@ -119,6 +128,9 @@ function divide(operation){
       for(var feature in json){
         addFeature(json[feature]);
       }  
+    },
+    error: function(jqXHR, status, errorThrown ){
+      alert('An error occurred...'+jqXHR.status+' - '+jqXHR.responseText);
     }
   });
 };
@@ -182,7 +194,7 @@ function clearMap(){
   source.clear();
   sourceResult.clear();
   map.removeLayer(predefinedVectorLayer);
-  
+
 };
 
 function createOperationData(source, overlay){
