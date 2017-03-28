@@ -154,8 +154,9 @@ function addFeature(json){
   /**
   *Estyles
   */
+  var color = 'rgba('+getRandomInt(0,256)+','+getRandomInt(0,256)+','+getRandomInt(0,256)+',0.4)';
   var fill = new ol.style.Fill({
-     color: 'rgba(255,0,0,0.4)'
+     color: color
    });
    var stroke = new ol.style.Stroke({
      color: 'red',
@@ -181,6 +182,7 @@ function clearMap(){
   source.clear();
   sourceResult.clear();
   map.removeLayer(predefinedVectorLayer);
+  
 };
 
 function createOperationData(source, overlay){
@@ -194,3 +196,7 @@ function createDivisionData(divisionLine, geomToDivide){
 function addFeaturesToPredefinedLayer(){
   map.addLayer(predefinedVectorLayer);
 };
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
