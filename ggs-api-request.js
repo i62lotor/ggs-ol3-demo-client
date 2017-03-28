@@ -114,7 +114,6 @@ function divide(operation){
   var geomToDivide = fgeometries[0];
   var divisionLine = fgeometries[1];
   var divisionData = createDivisionData(divisionLine, geomToDivide);
-  alert(divisionData);
   $.ajax({
     beforeSend: function(xhrObj){
         xhrObj.setRequestHeader("Content-Type","application/json");
@@ -165,14 +164,13 @@ function addFeature(json){
   
   /**
   *Estyles
-  */
-  var color = 'rgba('+getRandomInt(0,256)+','+getRandomInt(0,256)+','+getRandomInt(0,256)+',0.4)';
+  */  
   var fill = new ol.style.Fill({
-     color: color
+     color: 'rgba('+getRandomInt(0,256)+','+getRandomInt(0,256)+','+getRandomInt(0,256)+',0.4)'
    });
    var stroke = new ol.style.Stroke({
-     color: 'red',
-     width: 3
+     color: 'rgba('+getRandomInt(0,256)+','+getRandomInt(0,256)+','+getRandomInt(0,256)+',0.6)',
+     width: 2
    });
    var styles = [
      new ol.style.Style({
