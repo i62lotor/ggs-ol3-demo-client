@@ -59,7 +59,7 @@ Calcula la intersección entre los elementos de la capa auxiliar y los elementos
 ### Difference
 Calcula la diferencia (la parte que no intersecta) de los elementos de la capa auxiliar con los elementos dibujados. Devolviendo un solo elemento.
 
-### Sym-Difference elements
+### Sym-Difference
 Calcula la diferencia simétrica entre los elementos de la capa auxiliar y los elementos dibujados. Devolviendo un solo elemento.
 
 
