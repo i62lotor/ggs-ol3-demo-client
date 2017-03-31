@@ -21,6 +21,9 @@ Calcula el centroide del elemento seleccionado en el mapa.
 ### Envelope
 Calcula el rectángulo que envuelve (MBR) al elemento seleccionado en el mapa.
 
+### validate
+Valida si el elemento seleccionado presenta errores en su geometría.
+
 
 ## Operaciones sobre varios elementos:
 
