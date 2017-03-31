@@ -134,6 +134,33 @@ function divide(operation){
   });
 };
 
+function validateFeaturePost() { 
+     
+    var resourceUrl = document.getElementById("baseUrlField").value+'validation'; 
+    
+    var flatGeometry = createFlatGeometry("1","EPSG:3857",selectedWkt)
+    $.ajax({
+        beforeSend: function(xhrObj){
+            xhrObj.setRequestHeader("Content-Type","application/json");
+            xhrObj.setRequestHeader("Accept","application/json");
+        },
+        type: "POST",
+        url: resourceUrl,       
+        data: flatGeometry,
+        dataType: "json",
+        success: function(json){
+          if(json.valid == true){
+            alert("is valid? "+ json.valid);            
+          }else{
+             alert("is valid? "+ json.valid +"\nErrors: "+json.errors[0].description);             
+        }
+          
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert('An error occurred...'+jqXHR.status+' - '+jqXHR.responseText);
+        }
+    });
+ };
 function getFlatGeometries(layer){
   var features = [];    
   layer.forEachFeature(function(feature) {
